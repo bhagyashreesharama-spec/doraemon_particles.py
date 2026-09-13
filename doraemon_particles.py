@@ -2,22 +2,17 @@ import tkinter as tk
 import random
 import math
 
-# ==========================================
-# DORAEMON PARTICLE ANIMATION
-# Python standard library only
-# ==========================================
-
-WIDTH = 900
-HEIGHT = 900
+W = 700
+H = 700
 
 root = tk.Tk()
-root.title("Doraemon - Particle Art")
+root.title("Cute Doraemon Particle Art")
 root.configure(bg="black")
 
 canvas = tk.Canvas(
     root,
-    width=WIDTH,
-    height=HEIGHT,
+    width=W,
+    height=H,
     bg="black",
     highlightthickness=0
 )
@@ -26,25 +21,19 @@ canvas.pack()
 particles = []
 
 
-# ==========================================
-# PARTICLE
-# ==========================================
-
 class Particle:
-    def __init__(self, target_x, target_y, color, size):
-        self.x = random.randint(0, WIDTH)
-        self.y = random.randint(0, HEIGHT)
+    def __init__(self, x, y, color, size=3):
+        self.tx = x
+        self.ty = y
 
-        self.tx = target_x
-        self.ty = target_y
+        self.x = random.randint(0, W)
+        self.y = random.randint(0, H)
 
         self.color = color
         self.size = size
+        self.speed = random.uniform(0.045, 0.075)
 
-        self.speed = random.uniform(0.035, 0.065)
-        self.phase = random.uniform(0, math.pi * 2)
-
-        self.id = canvas.create_oval(
+        self.dot = canvas.create_oval(
             self.x,
             self.y,
             self.x + size,
@@ -53,20 +42,12 @@ class Particle:
             outline=""
         )
 
-    def update(self):
-
-        dx = self.tx - self.x
-        dy = self.ty - self.y
-
-        self.x += dx * self.speed
-        self.y += dy * self.speed
-
-        # Very small floating movement
-        self.x += math.sin(self.phase) * 0.08
-        self.y += math.cos(self.phase) * 0.08
+    def move(self):
+        self.x += (self.tx - self.x) * self.speed
+        self.y += (self.ty - self.y) * self.speed
 
         canvas.coords(
-            self.id,
+            self.dot,
             self.x,
             self.y,
             self.x + self.size,
@@ -74,129 +55,53 @@ class Particle:
         )
 
 
-# ==========================================
-# CREATE PARTICLES
-# ==========================================
-
-def add_particle(x, y, color, size=2):
-
-    particles.append(
-        Particle(x, y, color, size)
-    )
+def particle(x, y, color, size=3):
+    particles.append(Particle(x, y, color, size))
 
 
-# ==========================================
-# FILLED ELLIPSE
-# ==========================================
-
-def ellipse(cx, cy, rx, ry, color, count):
-
-    for _ in range(count):
-
-        angle = random.uniform(0, math.pi * 2)
-
+def ellipse(cx, cy, rx, ry, color, amount):
+    for _ in range(amount):
+        a = random.random() * math.pi * 2
         r = math.sqrt(random.random())
 
-        x = cx + math.cos(angle) * rx * r
-        y = cy + math.sin(angle) * ry * r
+        x = cx + math.cos(a) * rx * r
+        y = cy + math.sin(a) * ry * r
 
-        add_particle(
-            x,
-            y,
-            color,
-            random.choice([2, 2, 2, 3])
-        )
+        particle(x, y, color, random.choice([2, 2, 3]))
 
 
-# ==========================================
-# FILLED CIRCLE
-# ==========================================
-
-def circle(cx, cy, radius, color, count):
-
-    for _ in range(count):
-
-        angle = random.uniform(0, math.pi * 2)
-
-        r = radius * math.sqrt(random.random())
-
-        x = cx + math.cos(angle) * r
-        y = cy + math.sin(angle) * r
-
-        add_particle(
-            x,
-            y,
-            color,
-            random.choice([2, 2, 3])
-        )
+def circle(cx, cy, r, color, amount):
+    ellipse(cx, cy, r, r, color, amount)
 
 
-# ==========================================
-# LINE
-# ==========================================
-
-def line(x1, y1, x2, y2, color, count):
-
-    for _ in range(count):
-
+def line(x1, y1, x2, y2, color, amount):
+    for _ in range(amount):
         t = random.random()
 
         x = x1 + (x2 - x1) * t
         y = y1 + (y2 - y1) * t
 
-        x += random.uniform(-2, 2)
-        y += random.uniform(-2, 2)
-
-        add_particle(
-            x,
-            y,
-            color,
-            2
-        )
+        particle(x, y, color, 2)
 
 
 # ==========================================
-# DORAEMON HEAD
+# CUTE SMALL DORAEMON
 # ==========================================
 
-# Main blue head
+# HEAD
 ellipse(
-    450,
-    350,
-    220,
-    200,
-    "#129FE8",
-    1000
+    350, 300,
+    135, 125,
+    "#159FE8",
+    700
 )
 
-
-# Slight darker outer edge
-for _ in range(350):
-
-    angle = random.uniform(0, math.pi * 2)
-
-    x = 450 + math.cos(angle) * 220
-    y = 350 + math.sin(angle) * 200
-
-    add_particle(
-        x,
-        y,
-        "#087DC2",
-        2
-    )
-
-
-# ==========================================
 # WHITE FACE
-# ==========================================
-
 ellipse(
-    450,
-    390,
-    175,
-    145,
+    350, 325,
+    105, 88,
     "#FFFFFF",
-    650
+    450
 )
 
 
@@ -204,61 +109,35 @@ ellipse(
 # EYES
 # ==========================================
 
-# White eyes
+# left eye
 ellipse(
-    390,
-    305,
-    38,
-    55,
+    315, 255,
+    23, 34,
     "#FFFFFF",
-    180
+    100
 )
 
+# right eye
 ellipse(
-    510,
-    305,
-    38,
-    55,
+    385, 255,
+    23, 34,
     "#FFFFFF",
-    180
+    100
 )
 
-
-# Black pupils
+# pupils
 ellipse(
-    390,
-    320,
-    14,
-    27,
+    315, 265,
+    9, 17,
     "#111111",
-    90
+    55
 )
 
 ellipse(
-    510,
-    320,
-    14,
-    27,
+    385, 265,
+    9, 17,
     "#111111",
-    90
-)
-
-
-# Eye shine
-circle(
-    386,
-    309,
-    5,
-    "#FFFFFF",
-    25
-)
-
-circle(
-    506,
-    309,
-    5,
-    "#FFFFFF",
-    25
+    55
 )
 
 
@@ -267,19 +146,10 @@ circle(
 # ==========================================
 
 circle(
-    450,
-    375,
-    21,
-    "#E93645",
-    120
-)
-
-circle(
-    444,
-    369,
-    5,
-    "#FFFFFF",
-    25
+    350, 305,
+    12,
+    "#E83242",
+    80
 )
 
 
@@ -287,42 +157,21 @@ circle(
 # MOUTH
 # ==========================================
 
-# Vertical line
 line(
-    450,
-    398,
-    450,
-    455,
+    350, 318,
+    350, 355,
     "#111111",
-    80
+    45
 )
 
-
-# Left smile
-for _ in range(140):
-
+# smile
+for _ in range(100):
     t = random.random()
 
-    x = 450 - 115 * t
-    y = 455 + 45 * (t ** 2)
+    x = 350 + (t - 0.5) * 120
+    y = 355 + 30 * ((2 * t - 1) ** 2)
 
-    add_particle(
-        x,
-        y,
-        "#111111",
-        2
-    )
-
-
-# Right smile
-for _ in range(140):
-
-    t = random.random()
-
-    x = 450 + 115 * t
-    y = 455 + 45 * (t ** 2)
-
-    add_particle(
+    particle(
         x,
         y,
         "#111111",
@@ -334,15 +183,13 @@ for _ in range(140):
 # WHISKERS
 # ==========================================
 
-# Left
-line(340, 370, 220, 345, "#111111", 90)
-line(335, 395, 205, 395, "#111111", 90)
-line(340, 420, 220, 445, "#111111", 90)
+line(280, 315, 220, 300, "#111111", 45)
+line(280, 330, 215, 330, "#111111", 45)
+line(280, 345, 220, 360, "#111111", 45)
 
-# Right
-line(560, 370, 680, 345, "#111111", 90)
-line(565, 395, 695, 395, "#111111", 90)
-line(560, 420, 680, 445, "#111111", 90)
+line(420, 315, 480, 300, "#111111", 45)
+line(420, 330, 485, 330, "#111111", 45)
+line(420, 345, 480, 360, "#111111", 45)
 
 
 # ==========================================
@@ -350,85 +197,50 @@ line(560, 420, 680, 445, "#111111", 90)
 # ==========================================
 
 ellipse(
-    450,
-    620,
-    155,
-    175,
-    "#129FE8",
-    600
+    350, 470,
+    95, 120,
+    "#159FE8",
+    420
 )
 
 
-# ==========================================
 # WHITE BELLY
-# ==========================================
-
 ellipse(
-    450,
-    625,
-    115,
-    105,
+    350, 475,
+    70, 70,
     "#FFFFFF",
-    400
+    250
 )
 
 
 # ==========================================
-# ARMS
-# ==========================================
-
-ellipse(
-    295,
-    610,
-    50,
-    90,
-    "#129FE8",
-    220
-)
-
-ellipse(
-    605,
-    610,
-    50,
-    90,
-    "#129FE8",
-    220
-)
-
-
-# ==========================================
-# RED COLLAR
+# COLLAR
 # ==========================================
 
 line(
-    315,
-    525,
-    585,
-    525,
-    "#E52B38",
-    220
+    270, 400,
+    430, 400,
+    "#E83242",
+    100
 )
 
 
 # ==========================================
-# YELLOW BELL
+# BELL
 # ==========================================
 
 circle(
-    450,
-    555,
-    28,
+    350, 425,
+    17,
     "#FFD43B",
-    150
+    80
 )
 
 line(
-    435,
-    557,
-    465,
-    557,
+    342, 425,
+    358, 425,
     "#8A6500",
-    45
+    20
 )
 
 
@@ -437,29 +249,30 @@ line(
 # ==========================================
 
 ellipse(
-    450,
-    645,
-    78,
-    45,
-    "#129FE8",
-    180
+    350, 490,
+    48, 28,
+    "#159FE8",
+    100
 )
 
 
-# Pocket lower outline
-for _ in range(130):
+# ==========================================
+# ARMS
+# ==========================================
 
-    angle = random.uniform(0, math.pi)
+ellipse(
+    250, 465,
+    30, 55,
+    "#159FE8",
+    130
+)
 
-    x = 450 + math.cos(angle) * 78
-    y = 645 + math.sin(angle) * 45
-
-    add_particle(
-        x,
-        y,
-        "#087DC2",
-        2
-    )
+ellipse(
+    450, 465,
+    30, 55,
+    "#159FE8",
+    130
+)
 
 
 # ==========================================
@@ -467,38 +280,31 @@ for _ in range(130):
 # ==========================================
 
 ellipse(
-    370,
-    790,
-    78,
-    38,
+    300, 585,
+    45, 22,
     "#FFFFFF",
-    230
+    100
 )
 
 ellipse(
-    530,
-    790,
-    78,
-    38,
+    400, 585,
+    45, 22,
     "#FFFFFF",
-    230
+    100
 )
 
 
 # ==========================================
-# HEART FUNCTION
+# THREE CUTE HEARTS
 # ==========================================
 
-def heart(cx, cy, scale, color, count):
+def heart(cx, cy, scale):
 
-    points = []
+    for _ in range(80):
 
-    for i in range(400):
-
-        t = 2 * math.pi * i / 400
+        t = random.random() * math.pi * 2
 
         x = 16 * math.sin(t) ** 3
-
         y = (
             13 * math.cos(t)
             - 5 * math.cos(2 * t)
@@ -509,73 +315,37 @@ def heart(cx, cy, scale, color, count):
         x = cx + x * scale
         y = cy - y * scale
 
-        points.append((x, y))
-
-    for _ in range(count):
-
-        x, y = random.choice(points)
-
-        x += random.uniform(-7, 7)
-        y += random.uniform(-7, 7)
-
-        add_particle(
-            x,
-            y,
-            color,
-            random.choice([2, 2, 3])
+        particle(
+            x + random.uniform(-3, 3),
+            y + random.uniform(-3, 3),
+            "#FF5C9A",
+            2
         )
 
 
-# ==========================================
-# CUTE PINK HEARTS
-# ==========================================
-
-heart(
-    325,
-    125,
-    4.2,
-    "#FF4F9A",
-    160
-)
-
-heart(
-    450,
-    75,
-    5.5,
-    "#FF77B7",
-    200
-)
-
-heart(
-    575,
-    125,
-    4.2,
-    "#FF4F9A",
-    160
-)
+heart(280, 125, 2.5)
+heart(350, 90, 3.2)
+heart(420, 125, 2.5)
 
 
 # ==========================================
-# RANDOM FLOATING PARTICLES
+# FEW GLOWING FLOATING PARTICLES
 # ==========================================
 
-for _ in range(450):
+for _ in range(180):
 
-    x = random.randint(60, 840)
-    y = random.randint(40, 850)
+    x = random.randint(100, 600)
+    y = random.randint(70, 630)
 
-    color = random.choice([
-        "#129FE8",
-        "#37B7F2",
-        "#FFFFFF",
-        "#FF4F9A"
-    ])
-
-    add_particle(
+    particle(
         x,
         y,
-        color,
-        random.choice([1, 1, 2])
+        random.choice([
+            "#159FE8",
+            "#FFFFFF",
+            "#FF5C9A"
+        ]),
+        1
     )
 
 
@@ -585,8 +355,8 @@ for _ in range(450):
 
 def animate():
 
-    for particle in particles:
-        particle.update()
+    for p in particles:
+        p.move()
 
     root.after(16, animate)
 
